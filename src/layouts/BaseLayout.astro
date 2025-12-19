@@ -1,0 +1,55 @@
+---
+import "../styles/global.css";
+
+const { title, description } = Astro.props;
+
+const nav = [
+  { href: "/", label: "Home" },
+  { href: "/research", label: "Research" }
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} — Orion Labs` : "Orion Labs"}</title>
+    <meta name="description" content={description ?? "Security research across mobile platforms, product security, and applied AI."} />
+    <meta name="theme-color" content="#070b12" />
+
+    <meta property="og:site_name" content="Orion Labs" />
+    <meta property="og:title" content={title ? `${title} — Orion Labs` : "Orion Labs"} />
+    <meta property="og:description" content={description ?? "Security research across mobile platforms, product security, and applied AI."} />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" href="/favicon.png" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container nav-inner">
+        <a class="brand" href="/">
+          <img src="/assets/orion_labs.png" alt="Orion Labs logo" />
+          <span>Orion Labs</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          {nav.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+          <div>© {new Date().getFullYear()} Orion Labs. All rights reserved.</div>
+          <div>Contact: <a href="mailto:contact@orion-labs.tech">contact@orion-labs.tech</a></div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

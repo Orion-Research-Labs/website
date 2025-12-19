@@ -1,0 +1,76 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("research"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const areas = [
+  { title: "Mobile Security Research", desc: "iOS/Android vulnerability research, patch diffing, and exploitability assessment with responsible publication boundaries." },
+  { title: "Product Security", desc: "Security architecture reviews, threat modeling, and assurance practices for complex platforms and distributed systems." },
+  { title: "AI for Zero-Day Discovery", desc: "Applied ML to accelerate binary analysis workflows, fuzzing productivity, and triage." },
+  { title: "Anonymization Layers", desc: "Privacy engineering, traffic obfuscation patterns, and resiliency design validated through measurable testing." },
+  { title: "Mobile Agent Systems", desc: "Modular mobile architectures and secure data handling patterns explored in controlled lab environments." },
+  { title: "Industrial Security (Limited)", desc: "High-assurance risk governance and assurance practices. No sensitive operational disclosures." }
+];
+---
+
+<BaseLayout
+  title="Home"
+  description="Orion Labs is an independent security research group focused on mobile platforms, product security, and applied AI."
+>
+  <section class="hero">
+    <div class="container">
+      <div class="kicker">
+        <span class="badge">Independent Security Research</span>
+      </div>
+
+      <h1>Security research across mobile platforms, product security, and applied AI.</h1>
+      <p class="lead">
+        Orion Labs publishes technical research artifacts and methodologies designed to be useful to engineers and researchers—while remaining responsible about sensitive details.
+      </p>
+
+      <div class="cta-row">
+        <a class="btn primary" href="/research">Read research</a>
+        <a class="btn" href="mailto:contact@orion-labs.tech">Contact</a>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section-title">
+        <h2>Research areas</h2>
+      </div>
+
+      <div class="grid cols-3">
+        {areas.map((a) => (
+          <div class="card">
+            <h3>{a.title}</h3>
+            <p>{a.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section-title">
+        <h2>Featured research</h2>
+        <a href="/research">View all</a>
+      </div>
+
+      <div class="post-list">
+        {posts.map((p) => (
+          <a class="post-item" href={`/research/${p.slug}`}>
+            <div class="post-title">{p.data.title}</div>
+            <div class="post-meta">
+              <span>{p.data.date.toISOString().slice(0, 10)}</span>
+              <span>•</span>
+              <span>{p.data.description}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

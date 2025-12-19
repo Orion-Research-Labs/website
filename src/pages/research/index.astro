@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("research"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tagCounts = new Map();
+for (const p of posts) for (const t of (p.data.tags ?? [])) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+const tags = [...tagCounts.entries()].sort((a,b)=> b[1]-a[1]).slice(0, 12);
+---
+
+<BaseLayout title="Research" description="Research posts and technical notes from Orion Labs.">
+  <section class="hero" style="padding-bottom: 18px;">
+    <div class="container">
+      <div class="kicker">
+        <span class="badge">Research</span>
+      </div>
+      <h1>Publications</h1>
+      <p class="lead">Technical notes, methods, and research artifacts. Updates are published when research is complete.</p>
+
+      {tags.length > 0 && (
+        <>
+          <div class="hr"></div>
+          <div class="section-title"><h2>Top tags</h2></div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px;">
+            {tags.map(([t, c]) => (<span class="badge">{t} <span style="opacity:.7">({c})</span></span>))}
+          </div>
+        </>
+      )}
+
+      <div class="hr"></div>
+
+      <div class="post-list">
+        {posts.map((p) => (
+          <a class="post-item" href={`/research/${p.slug}`}>
+            <div class="post-title">{p.data.title}</div>
+            <div class="post-meta">
+              <span>{p.data.date.toISOString().slice(0, 10)}</span>
+              {p.data.tags?.length ? (<><span>•</span><span>{p.data.tags.slice(0, 4).join(", ")}</span></>) : null}
+            </div>
+            <div class="post-meta" style="margin-top:6px;">
+              <span>{p.data.description}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

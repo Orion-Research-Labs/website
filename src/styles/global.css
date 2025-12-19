@@ -1,0 +1,103 @@
+:root{
+  --bg: #070b12;
+  --text: #e7eefb;
+  --muted: #a9b7d4;
+  --line: rgba(255,255,255,0.08);
+  --max: 1120px;
+}
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background:
+    radial-gradient(1200px 700px at 10% 5%, rgba(15,92,156,0.18), transparent 55%),
+    radial-gradient(900px 520px at 85% 20%, rgba(11,63,107,0.18), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+a{ color: inherit; text-decoration: none; }
+a:hover{ text-decoration: underline; }
+.container{ width: min(var(--max), calc(100% - 48px)); margin: 0 auto; }
+.hr{ border: 0; height: 1px; background: var(--line); margin: 28px 0; }
+
+.badge{
+  display:inline-flex; gap:8px; align-items:center;
+  padding: 6px 10px; border: 1px solid var(--line);
+  border-radius: 999px; color: var(--muted);
+  background: rgba(255,255,255,0.02); font-size: 13px;
+}
+
+.nav{
+  position: sticky; top:0; backdrop-filter: blur(10px);
+  background: rgba(7,11,18,0.65); border-bottom: 1px solid var(--line);
+  z-index: 50;
+}
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: 14px 0; }
+.brand{ display:flex; align-items:center; gap: 12px; }
+.brand img{
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(255,255,255,0.02); border: 1px solid var(--line); padding: 6px;
+}
+.brand span{ letter-spacing: 0.02em; font-weight: 600; }
+.nav-links{ display:flex; gap: 18px; align-items:center; color: var(--muted); font-size: 14px; }
+.nav-links a{ padding: 8px 10px; border-radius: 10px; }
+.nav-links a:hover{ text-decoration:none; background: rgba(255,255,255,0.04); color: var(--text); }
+
+.hero{ padding: 72px 0 34px; }
+.kicker{ margin-bottom: 18px; }
+h1{ margin:0 0 12px; font-size: clamp(38px, 4.5vw, 56px); letter-spacing: -0.02em; line-height: 1.08; }
+.lead{ margin: 0; color: var(--muted); font-size: 18px; max-width: 820px; }
+.cta-row{ margin-top: 26px; display:flex; gap: 12px; flex-wrap: wrap; }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.02); color: var(--text);
+  font-weight: 600; font-size: 14px; text-decoration: none;
+}
+.btn:hover{ text-decoration:none; background: rgba(255,255,255,0.06); }
+.btn.primary{
+  border-color: rgba(15,92,156,0.45);
+  background: linear-gradient(180deg, rgba(15,92,156,0.22), rgba(11,63,107,0.12));
+}
+
+.grid{ display:grid; gap: 14px; }
+.grid.cols-3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px){ .grid.cols-3{ grid-template-columns: 1fr; } }
+
+.card{
+  border: 1px solid var(--line); border-radius: 18px;
+  background: rgba(255,255,255,0.02); padding: 16px;
+}
+.card h3{ margin: 0 0 6px; font-size: 16px; letter-spacing: -0.01em; }
+.card p{ margin:0; color: var(--muted); font-size: 14px; }
+
+.section-title{ display:flex; justify-content: space-between; align-items: baseline; gap: 18px; margin: 18px 0 12px; }
+.section-title h2{ margin:0; font-size: 18px; letter-spacing: -0.01em; }
+.section-title a{ color: var(--muted); font-size: 14px; }
+
+.post-list{ display:flex; flex-direction: column; gap: 10px; }
+.post-item{
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+}
+.post-item:hover{ background: rgba(255,255,255,0.05); text-decoration:none; }
+.post-meta{ display:flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.post-title{ margin:0; font-weight: 650; letter-spacing: -0.01em; }
+
+.footer{
+  margin-top: 50px; padding: 26px 0 40px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px;
+}
+.prose{ max-width: 820px; }
+.prose h2{ margin-top: 28px; }
+.prose p{ color: var(--muted); }
+.prose code{
+  padding: 2px 6px; border-radius: 8px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03); font-size: 0.95em;
+}
+.prose pre{
+  padding: 14px; border-radius: 16px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03); overflow:auto;
+}
