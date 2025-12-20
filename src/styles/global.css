@@ -32,15 +32,15 @@ a:hover{ text-decoration: underline; }
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: 16px 0; }
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: 14px 0; }
 
 .brand{ display:flex; align-items:center; }
 .brand-logo{
-  height: 22px; width: auto;
+  height: 18px; width: auto;
   display:block;
 }
 
-.nav-links{ display:flex; gap: 18px; align-items:center; font-size: 14px; color: var(--muted); }
+.nav-links{ display:flex; gap: 18px; align-items:center; font-size: 15px; color: var(--muted); }
 .nav-links a{
   color: var(--muted);
   padding: 8px 10px;
