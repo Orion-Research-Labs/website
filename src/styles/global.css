@@ -32,18 +32,18 @@ a:hover{ text-decoration: underline; }
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: 14px 0; }
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: clamp(12px, 1.6vw, 18px) 0; }
 
 .brand{ display:flex; align-items:center; }
 .brand-logo{
-  height: 18px; width: auto;
+  height: clamp(20px, 2.2vw, 28px); width: auto;
   display:block;
 }
 
-.nav-links{ display:flex; gap: 18px; align-items:center; font-size: 15px; color: var(--muted); }
+.nav-links{ display:flex; gap: clamp(12px, 1.6pw, 20px); align-items:center; font-size: clamp(13px, 1.2vw, 15px); color: var(--muted); }
 .nav-links a{
   color: var(--muted);
-  padding: 8px 10px;
+  padding: clamp(6px, 0.9vw, 10px) clamp(8px, 1.1vw, 12px);
   border-radius: 10px;
 }
 .nav-links a:hover{
@@ -136,3 +136,12 @@ h1{
   color: var(--muted);
   font-size: 13px;
 }
+
+/* Mobile fallback: keep nav readable and prevent overflow */
+@media (max-width: 520px) {
+  .nav-links {
+    gap: 10px;
+  }
+  .nav-links a {
+    padding: 6px 8px;
+  }
