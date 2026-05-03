@@ -1,0 +1,173 @@
+---
+title: "From Disclosure to Reproduction: Hunting NSO Pegasus V1 Infrastructure — Part 2"
+description: "Reproducing Citizen Lab and Lookout's 2016 Million Dollar Dissident infrastructure analysis with the 2026 connector stack: era-bound tool substitution, three previously-undisclosed NSO-attributed domains, and a V1 deployment 15 months earlier than the original disclosure documented."
+date: 2026-05-03
+tags: ["Threat Intelligence", "NSO Group", "Pegasus", "Certificate Transparency", "WHOIS History", "Infrastructure Hunting", "Era Translation", "Methodology"]
+draft: false
+---
+
+*This is the second post in a series examining the infrastructure of commercial spyware vendors. Part 1 set up Censys as a primitive; this post applies that primitive — alongside several others — to the canonical NSO Group V1 disclosure: Citizen Lab and Lookout's August 2016 reports on Pegasus and the Trident exploit chain. The aim is reproduction. What does it look like to redo the 2016 analysis with 2026 tools, what holds up, what doesn't, and what falls out the other side that wasn't in the original.*
+
+---
+
+## Why NSO First, Why V1 First
+
+NSO Group is the canonical case study for this kind of work. Among commercial spyware vendors it has the longest unbroken public disclosure record — from the *Million Dollar Dissident* report in August 2016 through to BLASTPASS in September 2023, with the most recent infrastructure-bearing primary source being Citizen Lab and Access Now's *By Whose Authority?* report in May 2024. That's roughly eight years of public reporting with seven discrete points along the OPSEC-evolution timeline, and a roughly twenty-three-month gap since the last infrastructure disclosure that may or may not represent operational silence on NSO's part.
+
+Within NSO's record, V1 is the right place to start for three reasons. First, it is fully decommissioned; analysing it poses no operational risk to current victims or operators. Second, it is the *baseline* — the reference everything else gets measured against. The V2 → V3 → V4 evolution story Citizen Lab tells across subsequent reports is told *in deltas from V1*. Third, the infrastructure itself is interesting on its own terms: 237 IPs in the documented cluster, nine core domains, a registrant identity that pivots to additional infrastructure if you have the right tools, and a takedown shape that turns out to be informative about NSO's posture toward disclosure at the time.
+
+This post is about reproducing the V1 analysis with the connector stack we currently have access to.
+
+---
+
+## The Article — August 2016
+
+The canonical V1 disclosure is *The Million Dollar Dissident: NSO Group's iPhone Zero-Days Used Against A UAE Human Rights Defender*, published by Citizen Lab on August 24, 2016, with a companion technical analysis published shortly afterward by Lookout Security. Together they document:
+
+- The Trident exploit chain — three vulnerabilities (CVE-2016-4655, CVE-2016-4656, CVE-2016-4657) chained for a one-click iOS jailbreak from a Safari context, patched in iOS 9.3.5 the day after disclosure.
+- Three live operational IPs (52.8.153.44 anonymizer; 52.8.52.166 and 162.209.103.68 PATN command-and-control nodes) and three historical NSO-direct IPs (82.80.202.200, 82.80.202.204, 54.251.49.214 — corresponding to qaintqa.com, mail1.nsogroup.com, and nsoqa.com respectively).
+- A wider 237-IP cluster that Citizen Lab withheld at publication, citing the possibility that some of those domains may have been used in legitimate law-enforcement operations.
+- A registrant pivot from `qaintqa.com` to the email `lidorg@nsogroup.com` — the analytical move that established direct attribution to NSO Group rather than circumstantial cluster analysis.
+
+The pivot in that last bullet is methodologically central. It depends on a specific capability — given a registrant field, enumerate every domain that has ever held that field, with first-seen and last-seen timestamps. In 2016 that capability was provided by PassiveTotal (RiskIQ at the time). PassiveTotal was acquired by Microsoft, rebranded as Microsoft Defender Threat Intelligence, and is on a published retirement schedule with end-of-life August 1, 2026.
+
+That single fact is the whole reason the methodology has to be careful about how it talks about tools.
+
+---
+
+## The Era-Translation Problem
+
+Primary-source articles cite tools that existed when the article was written. A 2016 article cites PassiveTotal because PassiveTotal was the obvious place to look in 2016. A 2018 article cites SecurityTrails because that was the obvious place by 2018. A 2024 article will cite something else. The product names are artifacts of the reporting era; the underlying *capability* — registrant-history pivot, deep historical DNS, internet-wide TLS scan archive — is durable.
+
+This matters operationally. Of three secondary-tier tools the V1 reproduction would benefit from, two are already gone in 2026 in the form they appeared in the 2016 record. PassiveTotal is retiring on August 1, 2026. SecurityTrails (acquired by Recorded Future in 2022) is still operational as an upstream service, but its deployable ecosystem — official Model Context Protocol server, maintained Python SDK — has decayed to the point where any integration is a from-scratch build. A literal substitution effort that goes hunting for "the new PassiveTotal" misses the point. The question isn't *which tool replaces PassiveTotal*; it's *which currently-available tool satisfies the registrant-history-pivot capability contract with comparable depth*.
+
+For the V1 cluster reproduction, the answer is a current commercial WHOIS-history index that exposes a reverse-WHOIS endpoint indexed by any field — registrant email, organisation, name servers, contact phone — with first-seen and last-seen timestamps and roughly a decade of historical depth. The same connector's DNS-history and subdomain-enumeration endpoints satisfy the SecurityTrails contract on the same vendor. Two contracts collapse onto one substitute. The cost is non-trivial but tractable. The product evaluation that led to that selection — capability-contract scoring across roughly half a dozen WHOIS-history vendors, tier-pricing comparison, MCP-availability assessment — is internal Orion Labs work; the rule the evaluation enacts is what this post is about.
+
+The era-translation rule is:
+
+> Capability is durable. Product is not. When an article cites a tool, record the *capability exercised in the paragraph*; map to whichever currently-available tool satisfies that capability; document the substitution explicitly in the analysis. The product name is preserved in the source citation but is not the primary record.
+
+PassiveTotal → substitute for V1 is the canonical empirical case. We exercise it directly below.
+
+---
+
+## The Connector Stack
+
+The reproduction uses a stack of public services orchestrated by a complementary bespoke layer.
+
+**Public services**, by category:
+
+- An internet-wide scan archive for current-state host records and certificate pivots.
+- A passive-DNS platform for resolution timelines and historical WHOIS.
+- A commercial WHOIS-history index for registrant-history pivoting and historical DNS — the era-translation substitute for the PassiveTotal and SecurityTrails contracts. Selection details are internal.
+- Certificate Transparency log search via the public CT aggregator, for historical issuance archive back to roughly 2013.
+- An independent internet-wide scanner index for cross-validation against the primary scan archive, particularly on TLS-handshake fingerprints (JARM) and favicon-hash facets the primary index does not surface as first-class fields.
+- A free per-IP lookup service used as the entry tier of a fall-through pattern that conserves paid-tier credits for the cases that actually need them.
+
+**Bespoke layer:**
+
+Orion Labs operates a stack of **seven specialised data-collection connectors** customised for fingerprint analysis — covering DNS, IP and registrant history, certificate observation, internet-wide service exposure, and cross-source correlation. The connectors wrap the public services above with protocol handling, transport quirks, error normalisation, query-budget instrumentation, and structured-error contracts that make the stack composable rather than a loose set of API calls. That customisation is internal Orion Labs work.
+
+Above the collection layer sits an **internal correlation and analytical surface** — a graph-database backbone with a custom schema encoding the methodology (adversaries, products, sources, infrastructure, fingerprints, capability-coverage relationships, cycle tracking, slot provenance) and the query patterns that drive cross-actor retroactive application, time-transition lifecycle analysis, and capability-gap auditing. The engine itself is open-source and generic; the schema design, the analytical query patterns, and the dataset cleanliness contracts that make cross-source reasoning tractable are internal Orion Labs work. Investigations that would otherwise be hours of ad-hoc shell-glue across heterogeneous APIs become single Cypher-style queries against a coherent dataset.
+
+The analysis itself runs through a **seven-phase cascading methodology**, applied per article and across articles, that collects public data and produces automated cross-tool evaluation based on time-transition and system-lifecycle observations. The framework currently defines **eight observable-class categories** spanning roughly **sixty signal-bearing sub-properties**, with **one validated compound fingerprint** operating against the V1 cluster catalogued here and additional compound fingerprints anticipated as subsequent posts cycle through the V2 / V3 / V4 generations and the broader vendor corpus.
+
+The architectural specifics — class taxonomy, compound-fingerprint slot-population formalism, capability-contract substitution framework, query-budget doctrine, cross-actor retroactive-application rule, graph-schema design, and analytical query library — remain internal to Orion Labs as the methodology matures. Subsequent posts in this series will surface validated technique fragments as their cross-actor utility is confirmed.
+
+What's worth saying publicly is that the evaluation runs end-to-end on infrastructure we control, which is itself the methodology answer to the question "what do you do when the article cites a tool you can't access." You build alternatives. You acquire substitutes against capability contracts. You document the gaps. You accept that some questions remain open because the data doesn't exist where you can reach it. The honest accounting of what you have *and don't have* is itself the methodology — not a defect of it.
+
+---
+
+## Reproduction — Step by Step
+
+The V1 reproduction has four passes. Each is a narrow technical step with a specific output that feeds the next.
+
+### Pass 1 — Domain Pre-resolution and Historical DNS
+
+The article documents nine core domains. The passive-DNS connector returns each domain's resolution timeline plus a current snapshot. For our purposes the historical resolutions are what matter — they tell us which IPs each domain pointed to and when.
+
+Two findings worth surfacing:
+
+`aalaan.tv` resolved to **52.42.91.180** on September 1, 2016. That IP isn't in the article — it's a V1 cluster fallback that came online roughly a week after the disclosure event documented in the article, possibly as part of NSO's response to early signals that the operation was being scrutinised. It sits in the same AWS us-west-2 /16 as 52.8.153.44 (the article's anonymizer IP), suggesting the V1 cluster was not just multi-IP but had reserved expansion capacity within a single hosting region.
+
+More substantively, `manoraonline.net` resolved to **52.8.52.166** at 2015-05-08 — fifteen months *before* the article's August 2016 attribution of that IP to `aalaan.tv`. Two implications. First, IP 52.8.52.166 was operating against multiple V1 domains across time, not just `aalaan.tv`. Second, the V1 operational window the article documents (August 2016) is a snapshot, not the start. We'll see this corroborated independently in the next pass.
+
+### Pass 2 — Registrant-History Pivot
+
+This is the era-translation test. The article uses PassiveTotal to pivot from `qaintqa.com` (the NSO QA/test domain) to its registrant email `lidorg@nsogroup.com` and from there to whatever other domains share that registrant. We run the equivalent against the substitute connector — querying the registrant-email field across the historical WHOIS index in historic-mode (non-current records included).
+
+The query returns four domains:
+
+- `qaintqa.com` — known from the article.
+- **`szaldin.com`** — not in the article. WHOIS audit records under GoDaddy from 2013-05-28 through 2015-12-25, all under the `lidorg@nsogroup.com` registrant. The audit window is firmly inside the V1 era.
+- **`endtwoend.com`** — not in the article. Registrant link confirmed via the reverse pivot; current WHOIS hides the email behind privacy redaction by an unrelated 2025-era owner, but the reverse-WHOIS index retains the pre-redaction history.
+- **`endtwoend.us`** — not in the article. WHOIS audit records under GoDaddy from 2014-08-07 through 2017-05-13.
+
+Three NSO-attributed domains beyond what was published in S001. The naming pattern is consistent — `szaldin` and `endtwoend` follow the same QA/test cadence as the article's `qaintqa.com` and `nsoqa.com`. None has shown observable operational activity since the V1 era; the DNS history records are sparse to absent for `szaldin.com` specifically (which may have existed in the registration record but never received a public-facing A record).
+
+The era-translation rule passes its first concrete test. The capability the article exercised in 2016 reproduces in 2026 against a different product, and produces an answer set that includes the article's known result plus three new findings.
+
+### Pass 3 — Certificate Transparency Archive
+
+CT logs cover certificate *issuance* — every cert issued by a participating CA, from roughly 2013 onward. They do not cover deployment (a cert can be issued and never deployed; or deployed without ever entering CT). For the V1 cluster they're a partial but valuable retrospective view that's independent of any commercial scanner index.
+
+Querying the CT issuance archive for `webadv.co` returns 24 certificates. Two are from the V1 era:
+
+- 2015-05-19 — `*.webadv.co` wildcard, issued by Comodo RSA Domain Validation Secure Server CA.
+- 2016-04-18 — `*.webadv.co` wildcard, issued by the same Comodo RSA DV CA.
+
+The 2015-05-19 issuance date is the second corroboration of the V1 era starting earlier than the article documents. The cert was active in May 2015 — exactly when (and slightly before) the previous pass surfaced the `manoraonline.net → 52.8.52.166` resolution. Two independent observation angles — passive DNS and CT log issuance — corroborate that V1 was operationally live by mid-2015, fifteen months before the disclosure event documented in the article.
+
+The Comodo issuer choice is itself a temporal marker. V1-era NSO domains used cheap DV certificates from a single inexpensive CA. Post-takedown re-registrations of the same domains by unrelated parties pivot to Let's Encrypt R3 (sixteen of the twenty-four certs in the response) and Amazon RSA (six) — a different cert lifecycle profile entirely, reflecting both the time period and the change of operator.
+
+The remaining V1-era NSO domains return mostly thin or empty CT histories. Comodo did not actively log every cert it issued before 2018, and NSO operationally minimised CT exposure where it could; many V1 hosts almost certainly used self-signed certificates that never entered any log. CT alone does not enumerate the 237-IP cluster — but for the cert-issuance slice it covers, it is the cleanest historical view we have.
+
+### Pass 4 — Current State
+
+The final pass: take the now-known V1 cluster — six article-disclosed IPs plus the new IP from Pass 1, plus the article's nine domains plus the three new ones from Pass 2 — and see what's currently observable.
+
+Five of six article-disclosed IPs return no record in any current public scanner index queried. Current-state scan-archive lookups show ASN and WHOIS metadata only — no live services. The IPs sit on prefixes their original hosting providers (Amazon, Choopa, Bezeq International) still hold, but the addresses have returned to the providers' allocation pools.
+
+The single exception is **54.251.49.214**, formerly the host for `nsoqa.com` (NSO QA/test, 2015-09 through 2016-08). It has been reclaimed by AWS Singapore and now hosts a generic Ubuntu plus nginx plus OpenSSH 7.6p1 EC2 instance with a self-signed TLS certificate. None of the V1 cert SAN themes appear; the SSH host key fingerprint and the SSH handshake fingerprint are uniquely the new tenant's. This is a clean reassignment — different operator, different stack, no NSO residue.
+
+For the domains, every one has either lapsed into parking, been re-registered by unrelated parties, or transitioned to Cloudflare-fronted hosting unrelated to NSO. `webadv.co` and `sms.webadv.co` are behind AWS Registry Web Suspension parking. `manoraonline.net` was re-registered in December 2023 and now Cloudflare-fronted. `smser.net` was re-registered in March 2021. `qaintqa.com` is a Bodis parking domain. `nsoqa.com` resolves to a 103.120.80.0/24 cluster (Singapore region, a different operator). The three new domains are dormant or under different ownership.
+
+A targeted scanner-side query against the three primary V1 cert SANs — `webadv.co`, `manoraonline.net`, `aalaan.tv` — returns zero matches across the current public scan index. No host on the public internet currently presents a TLS certificate matching any of the V1 cluster's distinctive cert SANs.
+
+The V1 cluster, as a fingerprint pattern observable on the live internet, is fully extinct.
+
+---
+
+## The Takedown Shape
+
+The empirical question Pass 4 answers is: *Did NSO let V1 die, or did they preserve it for some operational purpose?*
+
+The data says: they let it die.
+
+No registrant continuity into the post-V1 era. The four `lidorg@nsogroup.com` domains all date 2013–2016; no new domain registrations under that email surface in the reverse-WHOIS index after 2016. NSO did not re-use the registrant identity for V2 onward.
+
+No sinkhole, no migration, no preservation. The V1 IPs returned to their hosting providers' pools; the V1 domains lapsed and were re-registered by unrelated parties (parking landlords, Cloudflare-fronted speculators, opportunistic re-registration by the original brand holders in some cases). NSO did not retain the namespace, did not redirect traffic to any successor cluster, did not maintain any sinkhole infrastructure for monitoring revisits. The takedown was clean.
+
+One geographic note: the V1 IPs cleave on attribution lines — NSO-direct IPs sit on the operator's home-country prefix, operational PATN and anonymiser nodes sit on multi-national commercial VPS — and the pattern itself is the attribution signal.
+
+This is informative about NSO's posture toward disclosure in 2016. V1 was treated as expendable. The OPSEC strategy was *isolation* — V2 would have to be a clean break, with new registrant identity, new hosting providers, new cert lifecycle profile, new everything. That hypothesis is what subsequent posts in this series will test against the V2 → V3 → V4 record.
+
+---
+
+## Three Domains Worth Naming
+
+`szaldin.com`, `endtwoend.com`, and `endtwoend.us` are NSO-attributed via the public-record registrant pivot, were not enumerated in the original 2016 disclosure, and are operationally dormant in 2026. The disclosure-level threshold for naming them is that the registrant email Citizen Lab themselves disclosed in 2016 — `lidorg@nsogroup.com` — is the public anchor; the pivot capability is methodology-explicit; the domains carry no current operational role for any party.
+
+If you were doing this analysis yourself in 2026 with a current commercial WHOIS-history index and a copy of the *Million Dollar Dissident* report, you would arrive at the same four-domain answer set in roughly twelve seconds of query time. Naming the three new domains here doesn't expose anything that isn't already accessible to anyone who follows the methodology. What it does do is add to the public record the small piece of NSO's V1 cluster that the original disclosure operationally chose to withhold.
+
+---
+
+## What's Next in the Series
+
+Part 3 will address the V2 → V3 transition through Citizen Lab's *NSO Spyware Targeting Amnesty International* (July 2018) and *Hide and Seek* (September 2018) reports. The cross-article delta concept — how NSO's infrastructure changed between V1 and V2, on what registrant identity, with what operational continuity — engages there. Each subsequent vendor analysis (Intellexa, Variston, Paragon) will be measured against the V1 baseline this post establishes and against the V2 / V3 evolution Part 3 documents.
+
+The fingerprint library grows; the technique catalog grows; the methodology hardens against more disclosure events. The infrastructure is out there. We know what to look for. We're starting to look in earnest.
+
+---
+
+*Corrections, additions, and relevant technical disclosures welcome via [info@orion-labs.tech](mailto:info@orion-labs.tech). This work is better when it is collaborative.*
