@@ -8,12 +8,12 @@ const posts = (await getCollection("research"))
   .slice(0, 3);
 
 const areas = [
-  { title: "Mobile Security Research", desc: "iOS/Android vulnerability research, patch diffing, and exploitability assessment with responsible publication boundaries." },
-  { title: "Product Security", desc: "Security architecture reviews, threat modeling, and assurance practices for complex platforms and distributed systems." },
-  { title: "AI for Zero-Day Discovery", desc: "Applied ML to accelerate binary analysis workflows, fuzzing productivity, and triage." },
-  { title: "Anonymization Layers", desc: "Privacy engineering, traffic obfuscation patterns, and resiliency design validated through measurable testing." },
-  { title: "Mobile Agent Systems", desc: "Modular mobile architectures and secure data handling patterns explored in controlled lab environments." },
-  { title: "Industrial Security (Limited)", desc: "High-assurance risk governance and assurance practices. No sensitive operational disclosures." }
+  { title: "Mobile Platform Research", desc: "Internals analysis, vulnerability study, and patch research across iOS and Android. Published findings focus on technique and methodology." },
+  { title: "Autonomous AI Research", desc: "Security and safety research in autonomous AI systems — agent architectures, capability boundaries, and emergent behavior in controlled environments." },
+  { title: "AI-Assisted Analysis", desc: "Applying machine learning to binary analysis workflows, triage automation, and research productivity." },
+  { title: "Anonymization Research", desc: "Privacy engineering, traffic obfuscation, and resiliency design — validated through controlled testing." },
+  { title: "Mobile Agent Systems", desc: "Modular agent architectures and secure data handling patterns, explored in controlled research environments." },
+  { title: "Critical Systems", desc: "Risk governance and assurance practices for high-assurance environments." }
 ];
 ---
 
@@ -32,25 +32,6 @@ const areas = [
         Orion Labs publishes technical research artifacts and methodologies designed to be useful to engineers and researchers—while remaining responsible about sensitive details.
       </p>
 
-      <div class="cta-row">
-        <a class="btn primary" href="/research">Read research</a>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="section-title">
-        <h2>Research areas</h2>
-      </div>
-
-      <div class="grid cols-3">
-        {areas.map((a) => (
-          <div class="card">
-            <h3>{a.title}</h3>
-            <p>{a.desc}</p>
-          </div>
-        ))}
-      </div>
-
       <div class="hr"></div>
 
       <div class="section-title">
@@ -68,6 +49,21 @@ const areas = [
               <span>{p.data.description}</span>
             </div>
           </a>
+        ))}
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section-title">
+        <h2>Research areas</h2>
+      </div>
+
+      <div class="grid cols-3">
+        {areas.map((a) => (
+          <div class="card">
+            <h3>{a.title}</h3>
+            <p>{a.desc}</p>
+          </div>
         ))}
       </div>
     </div>
