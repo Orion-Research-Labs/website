@@ -4,46 +4,63 @@ import { getCollection } from "astro:content";
 
 const posts = (await getCollection("research"))
   .filter((p) => !p.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 
-const tagCounts = new Map();
-for (const p of posts) for (const t of (p.data.tags ?? [])) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
-const tags = [...tagCounts.entries()].sort((a,b)=> b[1]-a[1]).slice(0, 12);
+const areas = [
+  { title: "Mobile Platform Research", desc: "Internals analysis, vulnerability study, and patch research across iOS and Android. Published findings focus on technique and methodology." },
+  { title: "Autonomous AI Research", desc: "Security and safety research in autonomous AI systems — agent architectures, capability boundaries, and emergent behavior in controlled environments." },
+  { title: "AI-Assisted Analysis", desc: "Applying machine learning to binary analysis workflows, triage automation, and research productivity." },
+  { title: "Anonymization Research", desc: "Privacy engineering, traffic obfuscation, and resiliency design — validated through controlled testing." },
+  { title: "Mobile Agent Systems", desc: "Modular agent architectures and secure data handling patterns, explored in controlled research environments." },
+  { title: "Critical Systems", desc: "Risk governance and assurance practices for high-assurance environments." }
+];
 ---
 
-<BaseLayout title="Research" description="Research posts and technical notes from Orion Labs.">
-  <section class="hero" style="padding-bottom: 18px;">
+<BaseLayout
+  title="Home"
+  description="Orion Labs is an independent security research group focused on mobile platforms, product security, and applied AI."
+>
+  <section class="hero">
     <div class="container">
       <div class="kicker">
-        <span class="badge">Research</span>
+        <span class="badge">Independent Security Research</span>
       </div>
-      <h1>Publications</h1>
-      <p class="lead">Technical notes, methods, and research artifacts. Updates are published when research is complete.</p>
 
-      {tags.length > 0 && (
-        <>
-          <div class="hr"></div>
-          <div class="section-title"><h2>Top tags</h2></div>
-          <div style="display:flex; flex-wrap:wrap; gap:10px;">
-            {tags.map(([t, c]) => (<span class="badge">{t} <span style="opacity:.7">({c})</span></span>))}
-          </div>
-        </>
-      )}
+      <h1>Security research across mobile platforms, product security, and applied AI</h1>
+      <p class="lead">
+        Orion Labs publishes technical research artifacts and methodologies designed to be useful to engineers and researchers—while remaining responsible about sensitive details.
+      </p>
 
       <div class="hr"></div>
+
+      <div class="section-title">
+        <h2>Featured research</h2>
+        <a href="/research">View all</a>
+      </div>
 
       <div class="post-list">
         {posts.map((p) => (
           <a class="post-item" href={`/research/${p.slug}`}>
             <div class="post-title">{p.data.title}</div>
             <div class="post-date">{p.data.date.toISOString().slice(0, 10)}</div>
-            {p.data.tags?.length ? (
-              <div class="post-meta">
-                {p.data.tags.slice(0, 4).map((t) => <span class="tag">{t}</span>)}
-              </div>
-            ) : null}
             <p class="post-desc">{p.data.description}</p>
           </a>
+        ))}
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section-title">
+        <h2>Research areas</h2>
+      </div>
+
+      <div class="grid cols-3">
+        {areas.map((a) => (
+          <div class="card">
+            <h3>{a.title}</h3>
+            <p>{a.desc}</p>
+          </div>
         ))}
       </div>
     </div>
