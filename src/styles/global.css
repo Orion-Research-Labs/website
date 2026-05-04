@@ -4,7 +4,7 @@
 
 :root{
   --bg: #ffffff;
-  --ink: #083058;          /* primary logo color */
+  --ink: #083058;
   --muted: rgba(8,48,88,0.70);
   --line: rgba(8,48,88,0.12);
   --soft: rgba(8,48,88,0.04);
@@ -57,42 +57,59 @@ a:hover{ text-decoration: underline; }
 }
 
 /* Hero */
-.hero{ padding: 78px 0 34px; }
+.hero{ padding: 48px 0 34px; }
 .kicker{
   color: var(--muted);
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.badge{
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--muted);
 }
 h1{
-  margin: 12px 0 14px;
-  font-size: clamp(42px, 5vw, 62px);
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
 }
 .lead{
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   color: var(--muted);
-  max-width: 860px;
+  max-width: 760px;
+  line-height: 1.6;
 }
 
-/* Buttons */
-.cta-row{ margin-top: 22px; display:flex; gap: 12px; flex-wrap: wrap; }
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: #ffffff;
-  color: var(--ink);
-  font-weight: 650;
-  font-size: 14px;
+/* Section titles */
+.section-title{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
-.btn:hover{ text-decoration:none; background: var(--soft); }
-.btn.primary{
-  border-color: rgba(8,48,88,0.35);
-  background: rgba(8,48,88,0.06);
+.section-title h2{
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.section-title a{
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* Cards / grids */
@@ -143,7 +160,7 @@ h1{
   white-space: nowrap;
 }
 
-/* â”€â”€â”€ Prose â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── Prose ─────────────────────────────────────────────── */
 .prose {
   max-width: 860px;
   font-size: 16px;
@@ -187,7 +204,7 @@ h1{
   color: var(--muted);
 }
 
-/* First paragraph after heading â€” no top margin */
+/* First paragraph after heading — no top margin */
 .prose h2 + p,
 .prose h3 + p,
 .prose h4 + p { margin-top: 0; }
@@ -361,7 +378,7 @@ h1{
   font-size: 13px;
 }
 
-/* Mobile fallback: keep nav readable and prevent overflow */
+/* Mobile fallback */
 @media (max-width: 520px) {
   .nav-links {
     gap: 10px;
