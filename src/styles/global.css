@@ -57,7 +57,7 @@ a:hover{ text-decoration: underline; }
 }
 
 /* Hero */
-.hero{ padding: 48px 0 34px; }
+.hero{ padding: 36px 0 28px; }
 .kicker{
   color: var(--muted);
   font-size: 13px;
@@ -69,7 +69,7 @@ a:hover{ text-decoration: underline; }
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 20px;
@@ -78,38 +78,44 @@ a:hover{ text-decoration: underline; }
   color: var(--muted);
 }
 h1{
-  margin: 0 0 14px;
-  font-size: clamp(32px, 4vw, 50px);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  margin: 0 0 12px;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 700px;
 }
 .lead{
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   color: var(--muted);
-  max-width: 760px;
+  max-width: 640px;
   line-height: 1.6;
 }
 
 /* Section titles */
 .section-title{
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .section-title h2{
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 .section-title a{
   font-size: 13px;
   color: var(--muted);
+  opacity: 0.8;
+}
+.section-title a:hover{
+  opacity: 1;
+  text-decoration: none;
 }
 
 /* Cards / grids */
@@ -127,16 +133,36 @@ h1{
 .card p{ margin:0; color: var(--muted); font-size: 14px; }
 
 /* Posts */
-.post-list{ display:flex; flex-direction: column; gap: 10px; }
+.post-list{ display:flex; flex-direction: column; gap: 8px; }
 .post-item{
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 14px 16px;
   background: #ffffff;
+  transition: background 0.1s;
 }
 .post-item:hover{ background: var(--soft); text-decoration:none; }
-.post-title{ margin:0; font-weight: 700; letter-spacing: -0.01em; }
-.post-meta{ margin-top: 6px; color: var(--muted); font-size: 13px; display:flex; gap: 10px; flex-wrap: wrap; }
+.post-title{
+  margin: 0 0 5px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.post-date{
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+.post-desc{
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.post-meta{ margin: 6px 0 4px; display:flex; gap: 6px; flex-wrap: wrap; }
 
 /* Tags */
 .tag-row {
@@ -168,13 +194,11 @@ h1{
   margin-bottom: 80px;
 }
 
-/* Body text */
 .prose p {
   margin: 0 0 1.4em;
   color: var(--muted);
 }
 
-/* Headings */
 .prose h2 {
   margin: 2.4em 0 0.6em;
   font-size: clamp(20px, 2.2vw, 26px);
@@ -204,19 +228,16 @@ h1{
   color: var(--muted);
 }
 
-/* First paragraph after heading — no top margin */
 .prose h2 + p,
 .prose h3 + p,
 .prose h4 + p { margin-top: 0; }
 
-/* Lead italic opener */
 .prose > p:first-of-type em:only-child,
 .prose > em:first-child {
   color: var(--ink);
   font-style: italic;
 }
 
-/* Lists */
 .prose ul,
 .prose ol {
   margin: 0 0 1.4em;
@@ -235,7 +256,6 @@ h1{
 
 .prose li > p { margin: 0; }
 
-/* Inline code */
 .prose :not(pre) > code {
   font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
   font-size: 0.83em;
@@ -247,7 +267,6 @@ h1{
   white-space: nowrap;
 }
 
-/* Code blocks */
 .prose pre {
   margin: 1.6em 0;
   padding: 18px 20px;
@@ -269,7 +288,6 @@ h1{
   white-space: pre;
 }
 
-/* Tables */
 .prose table {
   width: 100%;
   border-collapse: collapse;
@@ -313,7 +331,6 @@ h1{
   background: rgba(8, 48, 88, 0.025);
 }
 
-/* Blockquote */
 .prose blockquote {
   margin: 1.8em 0;
   padding: 16px 20px 16px 24px;
@@ -326,7 +343,6 @@ h1{
 
 .prose blockquote p { margin: 0; }
 
-/* Horizontal rule */
 .prose hr {
   border: none;
   height: 1px;
@@ -334,7 +350,6 @@ h1{
   margin: 2.4em 0;
 }
 
-/* Strong & em */
 .prose strong {
   color: var(--ink);
   font-weight: 700;
@@ -344,7 +359,6 @@ h1{
   color: inherit;
 }
 
-/* Links */
 .prose a {
   color: var(--ink);
   text-decoration: underline;
@@ -357,7 +371,6 @@ h1{
   text-decoration-color: var(--ink);
 }
 
-/* Images */
 .prose img {
   max-width: 100%;
   border-radius: 10px;
@@ -366,7 +379,6 @@ h1{
   display: block;
 }
 
-/* Bottom space */
 .prose > *:last-child { margin-bottom: 0; }
 
 /* Footer */
