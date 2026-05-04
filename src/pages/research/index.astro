@@ -36,13 +36,13 @@ const tags = [...tagCounts.entries()].sort((a,b)=> b[1]-a[1]).slice(0, 12);
         {posts.map((p) => (
           <a class="post-item" href={`/research/${p.slug}`}>
             <div class="post-title">{p.data.title}</div>
-            <div class="post-meta">
-              <span>{p.data.date.toISOString().slice(0, 10)}</span>
-              {p.data.tags?.length ? (<><span>•</span><span>{p.data.tags.slice(0, 4).join(", ")}</span></>) : null}
-            </div>
-            <div class="post-meta" style="margin-top:6px;">
-              <span>{p.data.description}</span>
-            </div>
+            <div class="post-date">{p.data.date.toISOString().slice(0, 10)}</div>
+            {p.data.tags?.length ? (
+              <div class="post-meta">
+                {p.data.tags.slice(0, 4).map((t) => <span class="tag">{t}</span>)}
+              </div>
+            ) : null}
+            <p class="post-desc">{p.data.description}</p>
           </a>
         ))}
       </div>
