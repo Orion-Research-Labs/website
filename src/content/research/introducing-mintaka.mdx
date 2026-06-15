@@ -1,0 +1,72 @@
+---
+title: "Introducing Mintaka — A Threat-Hunt Research Program"
+description: "A sustained research program at Orion Labs producing two outputs together: a corpus of adversary-infrastructure analysis — roughly seventy signal bearers accumulated to date across compound fingerprints, technique classes, OPSEC patterns, cluster-shape signatures, and era-corrected attribution data — and the methodology, tooling, and analytical backend that makes the corpus possible. Current state human-led with AI assistance. Direction of travel a refined multi-agent system operating under the methodology as its discipline. The first dispatch in a new series."
+date: 2026-06-13
+tags: ["Threat Intelligence", "Threat Hunting", "Infrastructure Hunting", "Research Programs", "Methodology", "AI Research Agents"]
+draft: false
+---
+
+*This is the first dispatch in a series. I've been quietly working on this for some months. Here's what it is, why I'm doing it, and what I'll be sharing here as the work surfaces things worth sharing.*
+
+---
+
+## What Mintaka Is
+
+Mintaka is a sustained threat-hunt research program at [Orion Labs](https://orion-labs.tech). It produces two outputs together — a corpus of adversary-infrastructure analysis (structured fingerprint definitions, cross-case cluster indexes, normalised OPSEC traits, era-corrected infrastructure-attribution data) and the methodology, tooling, and analytical backend that makes the corpus possible. Both are deliverables. Both improve the field. Both compound over time.
+
+The longer-term direction matters as much as the current state. The methodology being developed here is the final act of making the AI side of the collaboration capable of operating more independently. The end state is a refined multi-agent research system that can engage new disclosures against the operating discipline this program is codifying. That is not where the program is today. It is where the work is going, and the methodology development is the path that gets it there.
+
+What the program has *today* is substantial. The corpus already holds roughly seventy distinct signal bearers — compound fingerprints, technique classes, OPSEC pattern entries, cluster-shape signatures, era-corrected attribution data — accumulated across the case-study cycles run to date. That material is already analytically useful, and the program has not yet fully capitalised on the capacity it holds. The corpus and the methodology refine each other in step: the corpus is what already exists; the methodology is what makes more of it deploy effectively. Both grow together.
+
+The name borrows from the broader convention at Orion Labs — research efforts borrow names from Orion's belt and the surrounding stars. Mintaka is one of the belt stars; navigators historically used it for bearings. Adversary infrastructure announces itself in small ways — a certificate field, a registration timing pattern, a behavioural quirk in how a server responds to unsolicited probes. The discipline is recognising those signals at scale, sustained over time, against many cases. Faint signals; true bearings.
+
+## Why It Exists
+
+Reporting on adversary infrastructure today is overwhelmingly case-by-case. A research group documents a campaign, the disclosure publishes, the infrastructure gets taken down, everyone moves on. The recognition discipline gets re-derived from scratch each time, against each new event. The published reports are excellent; the continuity between them is mostly absent.
+
+Mintaka exists because the discipline benefits from being structured and sustained. Techniques that catch one adversary's infrastructure overlap with techniques that catch another's. OPSEC postures one disclosure surfaces map back to postures earlier disclosures already named. Patterns across cases produce something a single case-study cannot — retroactive application of new techniques against prior material, cumulative learning that compounds, predictive capacity that builds.
+
+The second reason is operational. The established research groups — Citizen Lab, Amnesty's Security Lab, Lookout, Google TAG, and others — produce the original disclosures the field depends on, well-resourced for that purpose. Mintaka sits adjacent. It does not replace original disclosure work. It absorbs it, structures it, catalogues it, and reapplies it. The two layers are complementary. Original research stays the foundation; Mintaka is the continuity layer above it.
+
+## How It Works
+
+The collaboration is currently human-led, with AI assistance over structured extraction pipelines, graph-linked datasets, and retrospective reprocessing of new techniques against the prior corpus. I direct the analytical work — defining what to investigate, running parallel analysis on the data, contributing methodology corrections through feedback. Much of the methodology that now exists came from those feedback loops: I ran the same analysis the agent ran, in parallel, and the discrepancies between us surfaced something worth codifying. The agent does the methodical lifting; I do the analytical core and the judgment about where the work should go next.
+
+The collaboration is intentionally *not* autonomous discovery. AI agents that surface threats by themselves are not what this work is. The agent operates over structured pipelines under operator-gated phase transitions and explicit methodology rules; the researcher remains substantively involved in every analytical conclusion. That balance is a current-state property, not a permanent one. As the methodology stabilises cycle by cycle, more of the analytical work shifts to the agent and less of it requires the researcher to be load-bearing. The methodology's maturation is what makes that shift possible. By the time the methodology is mature enough to publish in detail, a meaningful share of what currently requires human judgment will be expressible as structured operating discipline that the agent system can hold.
+
+The tools are standard for the discipline — internet-scanning data, certificate transparency archives, passive DNS, WHOIS, IP geolocation and routing history, a graph substrate for relationship analysis. The connector stack matures as the work demands.
+
+A working measure of whether the program is succeeding: how often a pattern derived from one case-study successfully rediscovers infrastructure in another, and how often a technique absorbed from one disclosure surfaces material the original disclosure didn't enumerate. Both are concrete tests that the catalogue is doing something the individual cases cannot do alone. The accumulating answer to those questions is, in practice, the value Mintaka produces.
+
+## What I'll Publish Here
+
+This dispatch is the introduction. Subsequent dispatches will be technique-focused — each one named for a specific discovery or insight the work has absorbed during a recent cycle. What the technique is, why it is analytically useful, where it came from, how it fits into the discipline.
+
+A few of the dispatches already queued:
+
+- **DNS cache probing for country-of-operations attribution.** A technique well-documented in recent Citizen Lab work. It probes ISP DNS forwarders worldwide for cache hits on known C2 domains, aggregated by ASN, to determine where operations are being run. The methodological distinction worth absorbing: this characterises infrastructure use, not victim identity. The discipline of that distinction is what the dispatch will dwell on.
+- **Compound fingerprints anchored at the transport layer.** Why transport-layer fingerprinting buys discoverability that HTTP-layer fingerprinting cannot, particularly against current-generation adversary servers that close connections to any unsolicited probe. Drawn from recent Amnesty Security Lab analytical work.
+- **Cluster mapping at scale.** When fingerprint matching produces thousands of candidate hosts, you stop hunting per-host and start partitioning into operator profiles using behavioural signals — registration timing patterns, lexical clustering on domain language, port behaviour, shutdown-cohort. The shift from per-host to per-cluster is its own methodology specialism.
+- **Era-corrected infrastructure attribution.** Why current-state ASN attribution is often wrong for retrospective claims about adversary infrastructure (often by roughly twenty percent at six-year depth), and how routing-history sources resolve it.
+
+There are more in the backlog. The publication cadence will be irregular — when the work surfaces something worth sharing, the dispatch follows.
+
+## A Note on Method
+
+The internal methodology of how Mintaka operates — the catalogue schemas, the cycle-progression rules, the collaboration discipline — sits in a private document and matures cycle by cycle. Dispatches will surface pattern-level transparency: what a technique is, what makes it work, where it came from, why it matters for the discipline. The catalogue internals and operating rules stay private not as defensive hoarding but because the methodology is in motion. Locking it externally before it has stabilised would compromise the very refinement that makes it valuable. As the methodology matures, more of it will surface publicly — particularly the parts that codify what makes collaborative AI-human threat-research work in practice. That codification is itself the artefact the program is building toward.
+
+## A Note on Dual Use
+
+Some of what Mintaka catalogues is dual-use. The OPSEC techniques an adversary uses to blend their infrastructure into legitimate noise are simultaneously a hunting signal for defenders and a playbook for other adversaries. External dispatches will not publish the built OPSEC playbook and will not be used in dual-use scenarios. The calibration is itself part of the discipline.
+
+The OPSEC catalogue is analytically valuable for a specific structural reason: defensive postures manifest differently across the lifecycle of both systems and operations. Creation-phase OPSEC (how an asset is registered and stood up), use-phase OPSEC (how it is operated and modified in flight), and disposal-phase OPSEC (how it is taken down or transitioned) each present distinct fingerprints. Reading those lifecycle-bound differences is one of the ways attribution and operation-recognition work. Dispatches will discuss what the lifecycle distinction means for hunting — at the discipline level — without surfacing the specific technique inventory that would constitute a usable playbook for the other side.
+
+## What's Next
+
+The first technique dispatch lands soon. Until then, this introduction is the marker.
+
+If you work in or near this discipline — sustained adversary-infrastructure research, structured catalogue building, AI-collaborative research patterns, or methodology development for threat-intelligence work — the dispatches will progressively share what the work surfaces. The library grows; the methodology hardens; each cycle teaches something. The infrastructure is out there; the discipline of recognising it is what these dispatches will be about.
+
+---
+
+*Corrections, additions, and relevant technical disclosures welcome via [info@orion-labs.tech](mailto:info@orion-labs.tech). This work is better when it is collaborative.*
